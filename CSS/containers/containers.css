@@ -6,17 +6,15 @@
     flex-wrap: var(--flex-wrap, wrap);
     height: var(--height, auto);
     min-height: var(--height);
-    /* Avoid horizontal overflow from full-width + margins */
-    margin-block: var(--margin, 0);
-    margin-inline: var(--margin-inline, auto);
+    /* use longhand vars with --margin as base fallback */
+    margin-block: var(--margin-block, var(--margin, 0));
+    margin-inline: var(--margin-inline, var(--margin, 0));
     gap: var(--gap, 0);
     padding: var(--padding, 0);
-    /* Other structural caps still respected */
     max-height: var(--max-height);
     min-width: var(--min-width, 0);
     flex-grow: var(--flex-grow);
     border: var(--border);
-    /* Enable size container queries */
     container-type: inline-size;
 }
 

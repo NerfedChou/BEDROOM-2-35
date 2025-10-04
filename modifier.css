@@ -1,7 +1,6 @@
 .modifier {
     --width: 70rem;
     --gap: 1rem;
-    --margin: 1rem;
     align-items: center;
     justify-content: center;
     --border: 1px solid black;

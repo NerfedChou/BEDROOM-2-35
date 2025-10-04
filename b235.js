@@ -38,28 +38,6 @@ window.addEventListener('load', () => {
             gap = Number.isNaN(parsed) ? 0 : parsed;
         }
 
-        const containerPaddingLeft = parseFloat(containerStyles.getPropertyValue('padding-left')) || 0;
-        const containerPaddingRight = parseFloat(containerStyles.getPropertyValue('padding-right')) || 0;
-        const containerBorderLeft = parseFloat(containerStyles.getPropertyValue('border-left-width')) || 0;
-        const containerBorderRight = parseFloat(containerStyles.getPropertyValue('border-right-width')) || 0;
-
-        // Freeze flex behaviors during measurement to avoid shrink/grow affecting widths
-        const prevContainerWrap = container.style.getPropertyValue('--flex-wrap');
-        container.style.setProperty('--flex-wrap', 'nowrap');
-
-        const rollback = [];
-        children.forEach(child => {
-            const prevGrow = child.style.getPropertyValue('--flex-grow');
-            const prevShrink = child.style.getPropertyValue('--flex-shrink');
-            rollback.push([child, prevGrow, prevShrink]);
-            child.style.setProperty('--flex-grow', '0');
-            child.style.setProperty('--flex-shrink', '0');
-        });
-
-        // Force a reflow so computed styles reflect the frozen state
-        // eslint-disable-next-line no-unused-expressions
-        container.offsetWidth;
-
         // Child used widths (computed in px, unit-agnostic)
         const childWidths = children.map(child => {
             const s = window.getComputedStyle(child);
@@ -71,17 +49,6 @@ window.addEventListener('load', () => {
             const marginLeft = parseFloat(s.getPropertyValue('margin-left')) || 0;
             const marginRight = parseFloat(s.getPropertyValue('margin-right')) || 0;
             return width + paddingLeft + paddingRight + borderLeft + borderRight + marginLeft + marginRight;
-        });
-
-        // Restore flex behaviors after measurement
-        if (prevContainerWrap) {
-            container.style.setProperty('--flex-wrap', prevContainerWrap);
-        } else {
-            container.style.removeProperty('--flex-wrap');
-        }
-        rollback.forEach(([child, prevGrow, prevShrink]) => {
-            if (prevGrow) child.style.setProperty('--flex-grow', prevGrow); else child.style.removeProperty('--flex-grow');
-            if (prevShrink) child.style.setProperty('--flex-shrink', prevShrink); else child.style.removeProperty('--flex-shrink');
         });
 
         // Worst-case packing: sort widths desc and use prefix sums of top-i items
@@ -123,11 +90,16 @@ window.addEventListener('load', () => {
         --b235-items-per-row: ${i - 1};
     }
 `;
-            // On the last step (breaking to 1 item), allow children to shrink to avoid overflow.
+            // Final smallest breakpoint: force single-column integrity and defeat intrinsic min-size
             if (i === 2) {
                 css += `
+    .${uniqueClassName} {
+        flex-wrap: wrap;
+    }
     .${uniqueClassName} > * {
         --flex-shrink: 1;
+        min-width: 0;      
+        width: 100%;       
     }
 `;
             }
