@@ -8,15 +8,10 @@
     min-height: var(--height);
     margin-block: var(--margin-block, var(--margin, 0));
     margin-inline: var(--margin-inline, var(--margin, 0));
-    gap: var(--gap, 0);
     padding: var(--padding, 0);
     max-height: var(--max-height);
     min-width: var(--min-width, 0);
-    flex-grow: var(--flex-grow);
-    border: var(--border);
     container-type: inline-size;
-    align-content: var(--align-content);
-    align-items: var(--align-items);
 }
 
 .b235-container > * {

@@ -9,6 +9,29 @@ B235 is a cutting-edge CSS framework for building modern, responsive web layouts
 - **Smart Responsiveness:** B235's JavaScript engine automatically calculates the optimal size and breakpoints for each container, generating responsive CSS on the fly. Multiple containers on the same page work independently.
 - **Override-Driven:** Modifiers always win—customize any property by setting a CSS variable. The framework provides sensible defaults, but you stay in control.
 
+---
+
+## Why B235's ODA (Override-Driven Architecture) Is Essential
+
+B235 is not just a unit converter. Its ODA system is the catalyst for a full Layout Integrity Guarantee. Here’s what sets it apart:
+
+| Feature                     | Developer Action (Simple)      | B235 Smart Engine Action (The Magic) |
+|-----------------------------|---------------------------------|--------------------------------------|
+| **1. Accessibility**        | `--width: 500px;`               | Converts to `31.25rem` for breakpoints, ensuring scaling with user zoom and root font size. |
+| **2. Layout Integrity**     | `--width: 500px;`               | Injects min-width, max-width, and structural rules to prevent overflow/collapse. |
+| **3. Content-Out Responsiveness | `--width: 500px;`         | Dynamically calculates and injects perfect breakpoints and container queries based on content. |
+
+**Why not just use rem?**
+
+If you manually set `width: 31.25rem;`, you miss out on:
+- Automatic layout constraints (min/max/structural rules)
+- Dynamic, content-based breakpoints
+- The guarantee that your layout will always be robust and accessible
+
+B235’s ODA is the single, automated input that solves these engineering problems for you. You get guaranteed layout integrity and true content-driven responsiveness—something manual rem units can’t provide alone.
+
+---
+
 ### Features
 
 - **Easy to Use:** Get started in minutes. Just add a container, set your modifiers, and build.
@@ -33,6 +56,52 @@ B235 is a cutting-edge CSS framework for building modern, responsive web layouts
 2. **Customize with modifiers:** Set CSS variables (e.g., `--padding`, `--gap`, `--width`) inline or in your stylesheet.
 3. **Let the engine handle responsiveness:** The JavaScript engine measures your content and generates responsive CSS automatically.
 4. **Override as needed:** Use your own modifier classes or inline styles to fine-tune any property.
+
+---
+
+### Frequently Asked Questions
+
+#### Why use the ODA (Override-Driven Architecture) instead of native CSS properties?
+
+**Q:** Why should I use B235's ODA (e.g., `--width: 500px;`) instead of just setting native CSS properties like `width: 500px;`?
+
+**A:**
+
+While native CSS properties work and B235's engine will measure and adapt to them, using the ODA provides significant advantages:
+
+- **Predictable API & Theming:** ODA variables act as a clear, documented API for your components. This makes them easier to theme, maintain, and scale across large projects.
+- **No Specificity Battles:** Overriding a variable (e.g., `--width`) is cleaner and avoids the need for more specific selectors or `!important`.
+- **Contextual Control:** You can set ODA variables on parent elements to control many components at once, enabling powerful theming and context-aware design.
+- **Automatic Layout Guarantees:** The ODA is the trigger for B235's smart engine to inject layout constraints, dynamic breakpoints, and accessibility features. Native CSS alone does not provide these guarantees.
+- **Future-Proofing:** As B235 evolves, new features and layout logic will always hook into the ODA system, ensuring your codebase stays compatible and benefits from updates.
+
+In summary, ODA is not just about setting a value—it's about unlocking the full power, flexibility, and safety of the B235 framework.
+
+#### Can I use native CSS for other properties like justify-content?
+
+**Q:** Can I use native CSS properties (e.g., `justify-content: center`) instead of custom properties like `--justify-content: center`?
+
+**A:**
+
+Yes! For layout, alignment, and most styling (such as `justify-content`, `align-items`, `color`, etc.), you can use native CSS properties as usual. B235 is designed to be flexible and lets you use standard CSS for everything except width and height.
+
+**However, for `width` and `height`, you should use the ODA custom properties (`--width`, `--height`).**
+
+This is crucial because B235’s smart engine relies on these variables to:
+- Measure and calculate the true size of your container and its children
+- Inject dynamic breakpoints and responsive container queries
+- Guarantee layout integrity and prevent overflow/collapse
+- Ensure accessibility by converting units and scaling with user settings
+
+If you use native `width` or `height`, the engine may not be able to provide these guarantees. For all other properties, feel free to use native CSS for maximum flexibility and familiarity.
+
+#### Should I use custom properties for everything?
+
+**Q:** Do I need to use `--padding`, `--gap`, or other custom properties for B235 to work?
+
+**A:**
+
+No. For B235’s smart engine, only `--width` and `--height` are crucial for responsive layout and layout integrity. All other properties—such as `padding`, `gap`, `border`, `color`, `justify-content`, etc.—can and should be set using native CSS for simplicity and familiarity. This keeps your codebase clean and easy to maintain. Use custom properties only for width and height where you want B235’s advanced features.
 
 ---
 
