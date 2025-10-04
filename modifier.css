@@ -1,0 +1,19 @@
+.modifier {
+    --width: auto;
+    --gap: 1rem;
+    --padding: 1rem;
+    --margin: 1rem;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.tes {
+
+    --flex-grow: 0;
+
+    --flex-shrink: 0;
+    border: 1px solid black;
+    width: 20rem;
+    height: 20rem;
+}

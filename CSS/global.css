@@ -1,0 +1,19 @@
+:root {
+    --width: unset;
+    --height: unset;
+    --padding: unset;
+    --margin: unset;
+    --display: flex;
+    --gap: unset;
+    --flex-wrap: unset;
+    --max-width: unset;
+    --max-height: unset;
+    --min-width: unset;
+    --min-height: unset;
+    --flex-grow: 1;
+}
+
+
+.debug-mode {
+    outline: 1px solid red !important;
+}
