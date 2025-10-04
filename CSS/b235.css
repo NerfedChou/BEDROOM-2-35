@@ -1,2 +1,7 @@
 @import "containers/containers.css";
 @import "global.css";
+
+body {
+    padding: 0;
+    margin: 0;
+}

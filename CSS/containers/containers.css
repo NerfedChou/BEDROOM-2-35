@@ -1,31 +1,35 @@
 .b235-container {
-    width: var(--width);
+    width: 100%;
+    max-width: var(--width, 100%);
+    box-sizing: border-box;
     display: var(--display, flex);
-    flex-wrap: var(--flex-wrap);
+    flex-wrap: var(--flex-wrap, wrap);
     height: var(--height, auto);
     min-height: var(--height);
-    margin: var(--margin);
-    gap: var(--gap);
-    padding: var(--padding);
-    max-width: var(--max-width);
+    /* Avoid horizontal overflow from full-width + margins */
+    margin-block: var(--margin, 0);
+    margin-inline: var(--margin-inline, auto);
+    gap: var(--gap, 0);
+    padding: var(--padding, 0);
+    /* Other structural caps still respected */
     max-height: var(--max-height);
     min-width: var(--min-width, 0);
     flex-grow: var(--flex-grow);
+    border: var(--border);
+    /* Enable size container queries */
+    container-type: inline-size;
 }
 
 .b235-container > * {
-
+    box-sizing: border-box; /* predictable child sizing */
+    /* Child sizing is independent from container's --width */
     flex-grow: var(--flex-grow, 1);
-
     flex-shrink: var(--flex-shrink, 1);
     flex-basis: auto;
-
-    width: var(--width);
+    width: var(--item-width, auto);
 }
 
 .b235-container.b235-no-equal-height > * {
-
     flex-basis: auto;
-
     flex-grow: 0;
 }
