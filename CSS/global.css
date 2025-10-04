@@ -1,23 +1,23 @@
-:root {
-    /* All B235 variables default to unset; components provide safe fallbacks */
-    --width: unset;
-    --height: unset;
-    --padding: unset;
-    --margin: unset;
-    --margin-block: unset; /* added */
-    --margin-inline: unset;
-    --display: unset;
-    --gap: unset;
-    --flex-wrap: unset;
-    --max-width: unset;
-    --max-height: unset;
-    --min-width: unset;
-    --min-height: unset;
-    --flex-grow: unset;
-    --flex-shrink: unset;
-    --border: unset;
-    --item-width: unset;
-}
+/*:root {*/
+/*    !* All B235 variables default to unset; components provide safe fallbacks *!*/
+/*    --width: unset;*/
+/*    --height: unset;*/
+/*    --padding: unset;*/
+/*    --margin: unset;*/
+/*    --margin-block: unset; !* added *!*/
+/*    --margin-inline: unset;*/
+/*    --display: unset;*/
+/*    --gap: unset;*/
+/*    --flex-wrap: unset;*/
+/*    --max-width: unset;*/
+/*    --max-height: unset;*/
+/*    --min-width: unset;*/
+/*    --min-height: unset;*/
+/*    --flex-grow: unset;*/
+/*    --flex-shrink: unset;*/
+/*    --border: unset;*/
+/*    --item-width: unset;*/
+/*}*/
 
 /* Diagnostics */
 .debug-mode {
@@ -42,6 +42,8 @@
     --flex-shrink: unset;
     --border: unset;
     --item-width: unset;
+    --align-content: unset;
+    --align-items: unset;
 }
 
 /* Keep predictable sizing without stripping styles */
