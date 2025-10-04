@@ -1,8 +1,9 @@
 .modifier {
-    --width: 70rem;
+    --width: 100%;
     --gap: 1rem;
+    --padding: 1rem;
     align-items: center;
-    justify-content: center;
+    justify-content: end;
     --border: 1px solid black;
 }
 
@@ -10,9 +11,6 @@
 .tes {
 
     --flex-grow: 0;
-
-    --flex-shrink: 0;
+    --flex-shrink: 1;
     border: 1px solid black;
-    width: 10rem;
-    height: 10rem;
 }

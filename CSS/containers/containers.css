@@ -6,7 +6,6 @@
     flex-wrap: var(--flex-wrap, wrap);
     height: var(--height, auto);
     min-height: var(--height);
-    /* use longhand vars with --margin as base fallback */
     margin-block: var(--margin-block, var(--margin, 0));
     margin-inline: var(--margin-inline, var(--margin, 0));
     gap: var(--gap, 0);
@@ -19,8 +18,7 @@
 }
 
 .b235-container > * {
-    box-sizing: border-box; /* predictable child sizing */
-    /* Child sizing is independent from container's --width */
+    box-sizing: border-box;
     flex-grow: var(--flex-grow, 1);
     flex-shrink: var(--flex-shrink, 1);
     flex-basis: auto;

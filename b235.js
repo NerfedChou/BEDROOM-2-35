@@ -15,6 +15,16 @@ window.addEventListener('load', () => {
     let styleSheetContent = '';
     let containerId = 0;
 
+    // Recovery CSS (structural safety net; applied only when overflow/visibility changes are detected)
+    styleSheetContent += `
+/* B235 Recovery: structural safety net (applied dynamically) */
+.b235-recover { overflow-x: hidden; }
+.b235-recover > * { min-width: 0; width: 100%; --flex-shrink: 1; }
+`;
+
+    // Track initial eligible child counts to detect visibility changes later
+    const initialEligibleCount = new WeakMap();
+
     containers.forEach(container => {
         const children = Array.from(container.children).filter(child => {
             const cs = window.getComputedStyle(child);
@@ -27,6 +37,9 @@ window.addEventListener('load', () => {
             container.style.visibility = 'visible';
             return;
         }
+
+        // Record the initial eligible child count
+        initialEligibleCount.set(container, children.length);
 
         const containerStyles = window.getComputedStyle(container);
 
@@ -114,4 +127,41 @@ window.addEventListener('load', () => {
     styleSheet.textContent = styleSheetContent;
 
     containers.forEach(container => container.style.visibility = 'visible');
+
+    // --- Hybrid Assurance: debounced watchdog for overflow/visibility changes ---
+
+    const debounce = (fn, wait = 250) => {
+        let t;
+        return (...args) => {
+            clearTimeout(t);
+            t = setTimeout(() => fn.apply(null, args), wait);
+        };
+    };
+
+    const eligibleChildrenNow = (container) =>
+        Array.from(container.children).filter(child => {
+            const cs = window.getComputedStyle(child);
+            const position = cs.getPropertyValue('position');
+            const display = cs.getPropertyValue('display');
+            return (display !== 'none') && ['static', 'relative', 'sticky'].includes(position);
+        }).length;
+
+    const isOverflowing = (el) => el.scrollWidth > el.clientWidth;
+
+    const policeIntegrity = () => {
+        containers.forEach(container => {
+            // If new children appeared (e.g., mobile -> desktop menu), or overflow happens, apply recovery
+            const baseline = initialEligibleCount.get(container) ?? 0;
+            const now = eligibleChildrenNow(container);
+            if (now > baseline || isOverflowing(container)) {
+                container.classList.add('b235-recover');
+            } else {
+                container.classList.remove('b235-recover');
+            }
+        });
+    };
+
+    window.addEventListener('resize', debounce(policeIntegrity, 250));
+    // Run once after load to catch initial edge cases (e.g., fonts/images late load)
+    setTimeout(policeIntegrity, 0);
 });
