@@ -1,0 +1,13 @@
+.o {
+    color: red;
+    border: 1px solid red;
+    flex-grow: 0;
+    padding: 1rem;
+}
+
+.chamber {
+    gap: 1rem;
+    border: 1px solid red;
+    padding: 1rem;
+    justify-content: center;
+}
