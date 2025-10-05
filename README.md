@@ -158,18 +158,13 @@ Examples (copy/paste in your CSS)
 
 5) What can you do (practical recipes)
 ```css
-/* Flip to a 2-col grid exactly at the tablet breakpoint */
-@media (max-width: var(--b235-bp-3)) {
-  .my-mod { display: grid; grid-template-columns: 1fr 1fr; }
+.b235-container[data-b235-items="2"].chamber {
+        flex-direction: column;
 }
-
-/* Progressive decoration with the attribute bridge */
-.b235-container[data-b235-items="1"] > .o { border: none; }
-.b235-container[data-b235-items="3"] > .o { border-radius: 8px; }
-
-/* Per-component breakpoint tweak (scoped token override) */
-.my-scope { --b235-bp-2: 48rem; }
 ```
+In here you can see I can change the column direction.
+By accessing the data-b235-items attribute. Once more thing is that you can manipulate the container
+each breakpoint the JS engine generates for you. By having these power everything can be possible.
 
 6) Why is it implemented (philosophy)
 - Deliver a minimal, memorable API that grants full control without leaking complexity.

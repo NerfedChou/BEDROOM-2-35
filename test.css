@@ -49,3 +49,7 @@
     border-left: 5px solid #FF7043; /* Add a thick accent border */
     text-align: left;
 }
+
+.b235-container[data-b235-items="1"].chamber{
+        flex-direction: column;
+}
