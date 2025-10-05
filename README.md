@@ -105,8 +105,73 @@ No. For B235’s smart engine, only `--width` and `--height` are crucial for res
 
 ---
 
-Start building with B235 and experience a new level of speed, flexibility, and control in your web projects.
+## Override Bridge: Exposing Dynamic Breakpoints (How • Why • Ways)
 
-### Note: 
+1) How (the mechanism)
+- The engine measures each .b235-container’s children, computes collision widths, and generates a sequence of breakpoints.
+- It emits global tokens once on :root: --b235-bp-1, --b235-bp-2, ...
+- It uses those tokens inside @container rules: (max-width: var(--b235-bp-N)).
+- A ResizeObserver updates each container with data-b235-items="<N>" in real time as size changes.
 
-Still in early development. Feedback and contributions are welcome!
+Examples (copy/paste in your CSS)
+```css
+/* Attribute bridge: react to the live per-row state */
+.b235-container[data-b235-items="5"] > .o { /* styles for 5-per-row */ }
+.b235-container[data-b235-items="3"] > .o { /* styles for 3-per-row */ }
+.b235-container[data-b235-items="2"] > .o { /* styles for 2-per-row */ }
+.b235-container[data-b235-items="1"] > .o { /* styles for 1-per-row */ }
+```
+
+```css
+/* Direct container query with tokens (advanced) */
+@container b235cq-b235-container-0 (max-width: var(--b235-bp-2)) {
+  .b235-container-0 > .o { border-radius: 8px; }
+}
+```
+
+2) Why (the purpose)
+- Remove magic numbers; no pixel guessing or CSS inspection needed.
+- Global override power via tokens; redefine once, affect all dependent rules.
+- Transparency and control: the math is exposed as tokens and as a live attribute.
+- Ergonomics: the attribute bridge is simple, composable, and framework-agnostic.
+
+3) Why do it this way (the design choices)
+- Single :root emission avoids bloat and conflicts.
+- var(--b235-bp-N) in @container makes every breakpoint overrideable with pure CSS.
+- First-write-wins token strategy prevents cross-container token collisions.
+- data-b235-items provides a CSS-only hook; no JS needed in userland.
+
+4) What are the ways (to interact)
+```css
+/* Recommended: Attribute Bridge */
+.b235-container[data-b235-items="4"] > .o { gap: .5rem; }
+.b235-container[data-b235-items="2"] > .o { font-weight: 600; }
+
+/* Direct @container with tokens */
+@container b235cq-b235-container-1 (max-width: var(--b235-bp-3)) {
+  .b235-container-1 > .o { box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+}
+
+/* Optional global override: shift a core breakpoint for the whole site */
+:root { --b235-bp-3: 52rem; }
+```
+
+5) What can you do (practical recipes)
+```css
+/* Flip to a 2-col grid exactly at the tablet breakpoint */
+@media (max-width: var(--b235-bp-3)) {
+  .my-mod { display: grid; grid-template-columns: 1fr 1fr; }
+}
+
+/* Progressive decoration with the attribute bridge */
+.b235-container[data-b235-items="1"] > .o { border: none; }
+.b235-container[data-b235-items="3"] > .o { border-radius: 8px; }
+
+/* Per-component breakpoint tweak (scoped token override) */
+.my-scope { --b235-bp-2: 48rem; }
+```
+
+6) Why is it implemented (philosophy)
+- Deliver a minimal, memorable API that grants full control without leaking complexity.
+- Keep layouts mathematically correct while enabling easy global or local overrides.
+- Uphold the Layout Integrity Guarantee with maximum developer freedom and zero guesswork.

@@ -9,5 +9,43 @@
     gap: 1rem;
     border: 1px solid red;
     padding: 1rem;
-    justify-content: center;
+    justify-content: start;
+}
+
+/* In your test.css file */
+
+/* --- Base Styles for All Boxes --- */
+.b235-container > .o {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    text-align: center;
+    transition: all 0.3s ease; /* Smooth transition for style changes */
+    box-sizing: border-box;
+}
+
+/* --- Responsive Overrides Using the Framework Bridge --- */
+
+/* Style for when the container shows 5 items per row */
+.b235-container[data-b235-items="5"] > .o {
+    background-color: #E3F2FD; /* Light Blue */
+    border-color: #90CAF9;
+}
+
+/* Style for when the container shows 3 items per row */
+.b235-container[data-b235-items="3"] > .o {
+    background-color: #E8F5E9; /* Light Green */
+    border-radius: 8px; /* Add rounded corners */
+}
+
+/* Style for a 2-item, mobile-like layout */
+.b235-container[data-b235-items="2"] > .o {
+    background-color: #FFF3E0; /* Light Orange */
+    font-weight: bold;
+}
+
+/* Style for the single-column layout */
+.b235-container[data-b235-items="1"] > .o {
+    border-left: 5px solid #FF7043; /* Add a thick accent border */
+    text-align: left;
 }
