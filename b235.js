@@ -1,6 +1,47 @@
-// First Load
+// NEW: Ensure CSS is inserted at the very top of <head> and wait until it's loaded
+function ensureStylesheetAtHeadTop(href) {
+    const head = document.head || document.getElementsByTagName('head')[0];
+    const targetUrl = new URL(href, document.baseURI).href;
 
-window.addEventListener('load', () => {
+    // Find existing matching stylesheet (by absolute URL)
+    let link = Array.from(head.querySelectorAll('link[rel="stylesheet"]')).find(l => {
+        try { return new URL(l.href, document.baseURI).href === targetUrl; } catch { return l.href === href; }
+    });
+
+    // Create if missing
+    if (!link) {
+        link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+    }
+
+    // Move/insert to be the first child of <head>
+    if (head.firstChild !== link) {
+        head.insertBefore(link, head.firstChild);
+    }
+
+    // Wait until loaded (or resolve immediately if already present)
+    return new Promise((resolve, reject) => {
+        const isLoaded = () => Array.from(document.styleSheets).some(s => {
+            try { return s.href && new URL(s.href, document.baseURI).href === targetUrl; } catch { return false; }
+        });
+
+        if (isLoaded()) {
+            resolve(link);
+            return;
+        }
+
+        link.addEventListener('load', () => resolve(link), { once: true });
+        link.addEventListener('error', () => reject(new Error('Failed to load stylesheet: ' + href)), { once: true });
+    });
+}
+
+// NEW: Wrap the original load-handler body into a callable function
+let __b235_ran = false;
+function b235Calculate() {
+    if (__b235_ran) return;
+    __b235_ran = true;
+
     // The B235 Smart Engine
     const rootFontSize = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
 
@@ -111,8 +152,8 @@ window.addEventListener('load', () => {
     }
     .${uniqueClassName} > * {
         --flex-shrink: 1;
-        min-width: 0;      
-        width: 100%;       
+        min-width: 0;
+        width: 100%;
     }
 `;
             }
@@ -164,4 +205,17 @@ window.addEventListener('load', () => {
     window.addEventListener('resize', debounce(policeIntegrity, 250));
     // Run once after load to catch initial edge cases (e.g., fonts/images late load)
     setTimeout(policeIntegrity, 0);
-});
+}
+
+// NEW: Auto-inject CSS and then run the calculation
+(function bootstrapB235() {
+    const href = 'CSS/b235.css';
+    const domReady = document.readyState === 'loading'
+        ? new Promise(r => document.addEventListener('DOMContentLoaded', r, { once: true }))
+        : Promise.resolve();
+
+    domReady
+        .then(() => ensureStylesheetAtHeadTop(href))
+        .then(() => b235Calculate())
+        .catch(() => b235Calculate()); // Fallback: still run even if CSS fails to load
+})();
