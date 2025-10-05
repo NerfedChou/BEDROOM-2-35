@@ -42,10 +42,7 @@ function b235Calculate() {
     if (__b235_ran) return;
     __b235_ran = true;
 
-    // The B235 Smart Engine
     const rootFontSize = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
-
-    // 1. The Setup & Filtering
     const containers = document.querySelectorAll('.b235-container');
     if (containers.length === 0) return;
 
@@ -56,7 +53,10 @@ function b235Calculate() {
     let styleSheetContent = '';
     let containerId = 0;
 
-    // Recovery CSS (structural safety net; applied only when overflow/visibility changes are detected)
+    const rootTokens = new Map();
+    let containerCssContent = '';
+    const breakpointsMap = new Map(); // Map to store breakpoints for each container
+
     styleSheetContent += `
 /* B235 Recovery: structural safety net (applied dynamically) */
 .b235-recover { overflow-x: hidden; }
@@ -67,6 +67,7 @@ function b235Calculate() {
     const initialEligibleCount = new WeakMap();
 
     containers.forEach(container => {
+        const breakpoints = []; // <-- ADD THIS LINE to declare the array
         const children = Array.from(container.children).filter(child => {
             const cs = window.getComputedStyle(child);
             const position = cs.getPropertyValue('position');
@@ -92,17 +93,13 @@ function b235Calculate() {
             gap = Number.isNaN(parsed) ? 0 : parsed;
         }
 
-        // Child used widths (computed in px, unit-agnostic)
+        // Updated child width calculation to use getBoundingClientRect().width
         const childWidths = children.map(child => {
+            const rectWidth = child.getBoundingClientRect().width || 0;
             const s = window.getComputedStyle(child);
-            const width = parseFloat(s.getPropertyValue('width')) || 0;
-            const paddingLeft = parseFloat(s.getPropertyValue('padding-left')) || 0;
-            const paddingRight = parseFloat(s.getPropertyValue('padding-right')) || 0;
-            const borderLeft = parseFloat(s.getPropertyValue('border-left-width')) || 0;
-            const borderRight = parseFloat(s.getPropertyValue('border-right-width')) || 0;
             const marginLeft = parseFloat(s.getPropertyValue('margin-left')) || 0;
             const marginRight = parseFloat(s.getPropertyValue('margin-right')) || 0;
-            return width + paddingLeft + paddingRight + borderLeft + borderRight + marginLeft + marginRight;
+            return rectWidth + marginLeft + marginRight;
         });
 
         // Worst-case packing: sort widths desc and use prefix sums of top-i items
@@ -136,10 +133,19 @@ function b235Calculate() {
             const currentTotalWidth = childrenTotalWidth + gapsTotalWidth;
 
             const collisionWidthRem = (Math.ceil(currentTotalWidth) + epsilonPx) / rootFontSize;
+            const collisionWidthPx = Math.ceil(currentTotalWidth);
 
-            // Always base on the parent width
+            // Store token; first-write-wins
+            const bpTokenName = `--b235-bp-${children.length - i + 1}`;
+            if (!rootTokens.has(bpTokenName)) {
+                rootTokens.set(bpTokenName, `${collisionWidthRem}rem`);
+            }
+
+            breakpoints.push(collisionWidthPx);
+
+            // Use the token in the @container query
             css += `
-@container ${cqName} (max-width: ${collisionWidthRem}rem) {
+@container ${cqName} (max-width: var(${bpTokenName})) {
     .${uniqueClassName} > * {
         --b235-items-per-row: ${i - 1};
     }
@@ -162,12 +168,53 @@ function b235Calculate() {
 `;
         }
 
-        styleSheetContent += css;
+        // CHANGED: append container CSS to a separate buffer
+        containerCssContent += css;
+        breakpointsMap.set(container, breakpoints.reverse());
     });
+
+    // Emit a single consolidated :root with ordered tokens
+    if (rootTokens.size) {
+        styleSheetContent += `:root {\n`;
+        const ordered = Array.from(rootTokens.entries()).sort((a, b) => {
+            const ai = parseInt(a[0].split('--b235-bp-')[1], 10);
+            const bi = parseInt(b[0].split('--b235-bp-')[1], 10);
+            return ai - bi;
+        });
+        for (const [name, value] of ordered) {
+            styleSheetContent += `    ${name}: ${value};\n`;
+        }
+        styleSheetContent += `}\n`;
+    }
+
+    // Append container CSS
+    styleSheetContent += containerCssContent;
 
     styleSheet.textContent = styleSheetContent;
 
     containers.forEach(container => container.style.visibility = 'visible');
+
+    const observer = new ResizeObserver(entries => {
+        entries.forEach(entry => {
+            const container = entry.target;
+            const breakpoints = breakpointsMap.get(container);
+            if (!breakpoints) return;
+
+            const width = entry.contentRect.width;
+            let itemsPerRow = breakpoints.length + 1;
+
+            for (let i = 0; i < breakpoints.length; i++) {
+                if (width <= breakpoints[i]) {
+                    itemsPerRow = breakpoints.length - i;
+                    break;
+                }
+            }
+
+            container.setAttribute('data-b235-items', itemsPerRow);
+        });
+    });
+
+    containers.forEach(container => observer.observe(container));
 
     // --- Hybrid Assurance: debounced watchdog for overflow/visibility changes ---
 
@@ -208,13 +255,15 @@ function b235Calculate() {
 }
 
 // NEW: Auto-inject CSS and then run the calculation
-(function bootstrapB235() {
+(function B235() {
     const href = 'CSS/b235.css';
     const domReady = document.readyState === 'loading'
         ? new Promise(r => document.addEventListener('DOMContentLoaded', r, { once: true }))
         : Promise.resolve();
 
-    domReady
+    const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+
+    Promise.all([domReady, fontsReady])
         .then(() => ensureStylesheetAtHeadTop(href))
         .then(() => b235Calculate())
         .catch(() => b235Calculate()); // Fallback: still run even if CSS fails to load
